@@ -1,12 +1,7 @@
 #pragma once
 #include <initializer_list>
-#include <list>
-#include <vector>
-#include <algorithm>
 #include <iostream>
-#include <memory>
-
-using namespace std;
+#include <list>
 
 namespace NSet {
     template <typename ValueType>
@@ -429,4 +424,5 @@ NSet::Set<ValueType>::~Set() {
 }
 
 using namespace NSet;
+
 
