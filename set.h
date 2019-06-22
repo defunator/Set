@@ -38,7 +38,6 @@ namespace NSet {
         void dfs(Node* v);
 
     public:
-        explicit
         Set();
 
         template <typename InputIterator>
