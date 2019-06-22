@@ -7,16 +7,17 @@ namespace NSet {
     template <typename ValueType>
     class Set {
     private:
+        typedef typename std::list<ValueType>::iterator set_iterator;
         struct Node {
-            typename std::list<ValueType>::iterator keys[4];
+            set_iterator keys[4];
             Node* sons[4];
             size_t sons_number;
             Node* parent;
 
-            explicit
             Node();
 
-            Node(typename std::list<ValueType>::iterator key);
+            explicit
+            Node(set_iterator key);
 
             Node(const Node& other);
 
@@ -74,7 +75,7 @@ NSet::Set<ValueType>::Node::Node()
 }
 
 template <typename ValueType>
-NSet::Set<ValueType>::Node::Node(typename std::list<ValueType>::iterator key)
+NSet::Set<ValueType>::Node::Node(set_iterator key)
     : Node() {
     sons_number = 1;
     keys[0] = key;
@@ -187,7 +188,14 @@ NSet::Set<ValueType>::Set(InputIterator begin, InputIterator end)
     : root_(nullptr)
     , size_(0) {
     while (begin != end) {
-        insert(*(begin)++);
+        try {
+            insert(*(begin)++);
+        } catch (...) {
+            if (size_ != 0) {
+                dfs(root_);
+            }
+            throw;
+        }
     }
 }
 
@@ -249,8 +257,7 @@ void NSet::Set<ValueType>::insert(const ValueType& key) {
         return;
     }
 
-    ++size_;
-    typename std::list<ValueType>::iterator key_it;
+    set_iterator key_it;
 
     if (key < *neighbour_key->keys[0]) {
         key_it = elements_.insert(neighbour_key->keys[0], key);
@@ -261,10 +268,11 @@ void NSet::Set<ValueType>::insert(const ValueType& key) {
     }
 
     Node* new_node = new Node(key_it);
+    ++size_;
 
     if (neighbour_key->parent == nullptr) {
-        Node* tmp = root_;
-        root_ = new Node();
+        Node* tmp = new Node();
+        std::swap(root_, tmp);
         root_->sons[0] = tmp;
         root_->sons[1] = new_node;
         root_->sons_number = 2;
